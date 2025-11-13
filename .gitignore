@@ -1,0 +1,41 @@
+# Archivos y carpetas que Unity puede regenerar
+[Ll]ibrary/
+[Tt]emp/
+[Oo]bj/
+[Bb]uild/
+[Bb]uilds/
+[Ll]ogs/
+UserSettings/
+MemoryCaptures/
+
+# Archivos de cache del paquete
+/[Pp]ackages/com.unity.package-manager/
+
+# Archivos del sistema
+.DS_Store
+Thumbs.db
+
+# Configuración local
+*.userprefs
+*.csproj
+*.sln
+*.pidb
+*.suo
+*.user
+*.unityproj
+*.booproj
+*.svd
+*.pdb
+*.mdb
+*.opendb
+*.VC.db
+
+# Visual Studio Code
+.vscode/
+
+# Otros
+*.apk
+*.aab
+*.exe
+*.app
+*.unitypackage
