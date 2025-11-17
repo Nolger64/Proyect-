@@ -2,52 +2,43 @@ using UnityEngine;
 
 public class PlayerMovement : MonoBehaviour
 {
-    [Header("Parámetros de movimiento")]
-    public float speed = 5f;               // Velocidad de movimiento
-    public float rotationSpeed = 10f;      // Velocidad de rotación
-    public Transform cameraTransform;      // Asigna la cámara del jugador (drag & drop desde el Inspector)
+    public float speed = 5f;
+    public float gravity = -9.81f;
+    public float jumpForce = 3f;
 
-    private Rigidbody rb;
-    private Vector3 moveDirection;
+    CharacterController controller;
+    Animator animator;
+    Vector3 velocity;
 
     void Start()
     {
-        rb = GetComponent<Rigidbody>();
-        rb.freezeRotation = true; // Evita que el Rigidbody se caiga o rote por física
-        Cursor.lockState = CursorLockMode.Locked;
+        controller = GetComponent<CharacterController>();
+        animator = GetComponentInChildren<Animator>();
     }
 
     void Update()
     {
-        // Leer entrada del jugador
-        float horizontal = Input.GetAxisRaw("Horizontal");
-        float vertical = Input.GetAxisRaw("Vertical");
+        float x = Input.GetAxis("Horizontal");
+        float z = Input.GetAxis("Vertical");
 
-        // Dirección base (según cámara)
-        Vector3 forward = cameraTransform.forward;
-        Vector3 right = cameraTransform.right;
+        Vector3 move = transform.right * x + transform.forward * z;
 
-        // Asegura que el movimiento esté solo en el plano XZ
-        forward.y = 0f;
-        right.y = 0f;
-        forward.Normalize();
-        right.Normalize();
+        controller.Move(move * speed * Time.deltaTime);
 
-        // Dirección final de movimiento (relativa a la cámara)
-        moveDirection = (forward * vertical + right * horizontal).normalized;
-    }
-
-    void FixedUpdate()
-    {
-        // Mover personaje
-        Vector3 moveVelocity = moveDirection * speed;
-        rb.linearVelocity = new Vector3(moveVelocity.x, rb.linearVelocity.y, moveVelocity.z);
-
-        // Si hay movimiento, rotar hacia la dirección
-        if (moveDirection.magnitude > 0.1f)
+        if (controller.isGrounded && velocity.y < 0)
         {
-            Quaternion targetRotation = Quaternion.LookRotation(moveDirection);
-            transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, rotationSpeed * Time.fixedDeltaTime);
+            velocity.y = -2f;
         }
+
+        velocity.y += gravity * Time.deltaTime;
+        controller.Move(velocity * Time.deltaTime);
+
+        if (Input.GetButtonDown("Jump") && controller.isGrounded)
+        {
+            velocity.y = Mathf.Sqrt(jumpForce * -2f * gravity);
+        }
+
+        // Enviar velocidad al Animator
+        animator.SetFloat("Speed", new Vector3(x, 0, z).magnitude);
     }
 }
